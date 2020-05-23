@@ -1,6 +1,7 @@
 StreamRecorder
 ==========
 
-![Build Status](https://travis-ci.com/FortuneDayssss/StreamRecorder.svg?token=yhK78CgYTnSqeMpVHBpf&branch=master)
+![Build Status](https://travis-ci.org/FortuneDayssss/StreamRecorder.svg?branch=master)
 
 probe streamers' status and auto download streams
+
