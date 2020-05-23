@@ -155,13 +155,13 @@ CELERY_TIMEZONE = TIME_ZONE
 
 
 CELERY_BEAT_SCHEDULE = {
-    # 'periodic_record': {
-    #     'task': 'StreamRecorder.tasks.periodic_record',
-    #     'schedule': 5.0
-    # },
+    'periodic_record': {
+        'task': 'StreamRecorder.tasks.periodic_record',
+        'schedule': 60.0
+    },
     'periodic_upload': {
         'task': 'StreamRecorder.tasks.periodic_upload',
-        'schedule': 5.0
+        'schedule': 600.0
     }
 }
 
