@@ -1,1 +1,8 @@
-.idea/*src/secret.pysrc/celerybeat-schedule.dbdata/*venvsrc/StreamRecorder/migrations/*src/dashboard/migrations/***/__pycache__
+.idea/*
+src/secret.py
+src/celerybeat-schedule.db
+data/*
+venv
+src/StreamRecorder/migrations/*
+src/dashboard/migrations/*
+**/__pycache__
