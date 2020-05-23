@@ -1,0 +1,81 @@
+version: '2'
+
+services:
+  redis:
+    image: 'arm32v7/redis'
+    container_name: srs-redis
+    command: redis-server --requirepass devpassword
+    volumes:
+      - '../data/redis:/data'
+    ports:
+      - '6379:6379'
+
+  app:
+    build: .
+    container_name: srs-app
+    working_dir: '/src'
+    command: python3 manage.py runserver 0.0.0.0:5000
+    environment:
+      - PYTHONUNBUFFERED=true
+      - DATABASE_URL=/db/StreamRecorderDB.db
+      - ENV_PROFILE=dev-docker
+      - BILIBILI_USERNAME=USERNAME
+      - BILIBILI_PASSWORD=PASSWORD
+    volumes:
+      - '../src:/src'
+      - '../data/db:/db'
+      - '../data/video:/video'
+    links:
+      - redis
+    ports:
+      - '5000:5000'
+    depends_on:
+      - redis
+
+  celery_worker:
+    build: .
+    container_name: srs-celery-worker
+    working_dir: '/src'
+    command: celery worker -l info -A StreamRecorder.celery --autoscale=20,3 -n worker@%h -B
+    environment:
+      - CELERY_BROKER_URL=redis://:devpassword@redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://:devpassword@redis:6379/0
+      - DATABASE_URL=/db/StreamRecorderDB.db
+      - C_FORCE_ROTT=true
+      - CACHE_REDIS_URL=redis://devpassword@redis:6379/1
+      - ENV_PROFILE=dev-docker
+      - BILIBILI_USERNAME=USERNAME
+      - BILIBILI_PASSWORD=PASSWORD
+    volumes:
+      - '../src:/src'
+      - '../data/video:/video'
+      - '../data/db:/db'
+    links:
+      - redis
+    depends_on:
+      - redis
+      - app
+
+  flower:
+    build: .
+    container_name: srs-flower
+    working_dir: '/src'
+    command: >
+      flower -A StreamRecorder.celery
+      --broker=redis://:devpassword@redis:6379/0
+      --broker_api=redis://:devpassword@redis:6379/0
+      --address=0.0.0.0
+      --debug=true
+    environment:
+      - REDIS_PASSWORD=devpassword
+    volumes:
+      - '../src:/src'
+      - '../data/video:/video'
+      - '../data/db:/db'
+    ports:
+      - '5555:5555'
+    links:
+      - redis
+    depends_on:
+      - celery_worker
+      - redis
