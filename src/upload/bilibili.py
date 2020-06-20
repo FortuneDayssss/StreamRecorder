@@ -4,7 +4,7 @@ import sys
 
 
 # 电子竞技tid=171
-def upload(username, password, parts, title, tid, tag, description, source, no_reprint, open_elec, copyright):
+def upload(username, password, parts, title, tid, tag, description, source, no_reprint, open_elec, copyright, thread_pool_workers=1):
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
     handler = logging.StreamHandler(sys.stdout)
@@ -24,7 +24,8 @@ def upload(username, password, parts, title, tid, tag, description, source, no_r
         desc=description,
         source=source,
         no_reprint=no_reprint,
-        open_elec=open_elec
+        open_elec=open_elec,
+        thread_pool_workers=thread_pool_workers,
     )
 
 
@@ -51,5 +52,6 @@ if __name__ == '__main__':
         description="python upload test",
         source="https://www.douyu.com/120219",
         no_reprint=0,
-        open_elec=1
+        open_elec=1,
+        thread_pool_workers=5
     )
