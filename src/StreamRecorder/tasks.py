@@ -93,11 +93,13 @@ def upload_bilibili(sv_id):
     try:
         vchunks = VideoChunk.objects.filter(stream_video_id=sv).order_by('start_time')
         parts = []
-        for i, chunk in enumerate(vchunks):
+        part_counter = 0
+        for chunk in vchunks:
             if os.path.isfile(chunk.full_path):
+                part_counter += 1
                 part = bilibiliuploader.VideoPart(
                     path=chunk.full_path,
-                    title="P{}".format(i + 1)
+                    title="P{}".format(part_counter)
                 )
                 parts.append(part)
 
