@@ -40,7 +40,11 @@ if __name__ == '__main__':
         title="p2",
         desc=""
     )
-    from secret import *
+    import json
+    with open("secret.json", 'r') as f:
+        secret = json.loads(f.read())
+        BILIBILI_USERNAME = secret["bilibili_username"]
+        BILIBILI_PASSWORD = secret["bilibili_password"]
     upload(
         copyright=2,
         username=BILIBILI_USERNAME,

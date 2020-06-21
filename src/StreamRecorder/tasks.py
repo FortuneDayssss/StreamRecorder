@@ -6,7 +6,7 @@ from datetime import timedelta
 import os.path
 from util.file import parse_file_size
 import upload.bilibili
-import bilibiliupload
+import bilibiliuploader
 import json
 import StreamRecorder.settings
 
@@ -95,7 +95,7 @@ def upload_bilibili(sv_id):
         parts = []
         for i, chunk in enumerate(vchunks):
             if os.path.isfile(chunk.full_path):
-                part = bilibiliupload.VideoPart(
+                part = bilibiliuploader.VideoPart(
                     path=chunk.full_path,
                     title="P{}".format(i + 1)
                 )
@@ -145,3 +145,15 @@ def periodic_upload():
             upload_bilibili.delay(sv.id)
             result += "id"
     return result
+
+
+@shared_task
+def periodic_delete():
+    result = ""
+    vcs = VideoChunk.objects.all().filter(start_time__lte=timezone.now()-timedelta(days=7), fs_exist=True)
+    for vc in vcs:
+        if os.path.exists(vc.full_path):
+            os.remove(vc.full_path)
+            result += vc.full_path
+        vc.fs_exist = False
+        vc.save()

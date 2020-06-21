@@ -14,7 +14,7 @@ services:
     build: .
     container_name: srs-app
     working_dir: '/src'
-    command: python3 manage.py runserver 0.0.0.0:5000
+    command: bash app_run.sh
     environment:
       - PYTHONUNBUFFERED=true
       - DATABASE_URL=/db/StreamRecorderDB.db

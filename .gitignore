@@ -1,5 +1,5 @@
 .idea/*
-src/secret.py
+src/secret.json
 src/celerybeat-schedule.db
 data/*
 venv

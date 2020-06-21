@@ -333,8 +333,8 @@ class TestTasks(TestCase):
 
     @patch('StreamRecorder.tasks.upload.bilibili') # uploader
     @patch('StreamRecorder.tasks.os.path.isfile')
-    @patch('StreamRecorder.tasks.bilibiliupload') # lib module
-    def test_upload_bilibili(self, mock_lib_bilibiliupload, mock_isfile, mock_upload_bilibili):
+    @patch('StreamRecorder.tasks.bilibiliuploader') # lib module
+    def test_upload_bilibili(self, mock_lib_bilibiliuploader, mock_isfile, mock_upload_bilibili):
         from StreamRecorder.tasks import upload_bilibili
         st1 = StreamerTask(
             id=1,
@@ -390,8 +390,84 @@ class TestTasks(TestCase):
         upload_bilibili(1)
 
         self.assertEqual(mock_isfile.call_count, 2)
-        self.assertEqual(mock_lib_bilibiliupload.VideoPart.call_count, 2)
+        self.assertEqual(mock_lib_bilibiliuploader.VideoPart.call_count, 2)
         self.assertEqual(mock_upload_bilibili.upload.call_count, 1)
         upload_args = mock_upload_bilibili.upload.call_args_list[0][1]
         self.assertEqual(upload_args['title'], '2020年2月1日棋客老师第一视角')
         self.assertEqual(StreamVideo.objects.get(id=1).bilibili_status, "finished")
+
+    @patch('StreamRecorder.tasks.os.path.exists')
+    @patch('StreamRecorder.tasks.os.remove')
+    def test_periodic_delete(self, mock_os_remove, mock_os_path_exists):
+        from StreamRecorder.tasks import periodic_delete
+        st1 = StreamerTask(
+            id=1,
+            streamer_name='test_streamer1',
+            platform='douyu',
+            room_id='000001',
+            room_url='https://www.douyu.com/000001',
+            record_enabled=True,
+            record_running=False,
+            record_dir_path='/dummy/dir',
+            record_chunk_size_limit='1G',
+            upload_bilibili_enabled=True,
+            upload_bilibili_video_name='',
+            upload_bilibili_info='{ \
+                      "title": "{date}棋客老师第一视角", \
+                      "tid": 171, \
+                      "tag": ["电子竞技", "星际争霸2", "神族", "棋客"], \
+                      "description": "{date}棋客老师第一视角", \
+                      "source": "https://www.douyu.com/120219", \
+                      "no_reprint": true, \
+                      "open_elec": true \
+                    }',
+            upload_onedrive_enabled=False
+        )
+        st1.save()
+        sv1 = StreamVideo(
+            id=1,
+            streamer_id=st1,
+            start_time=timezone.now().replace(2020, 2, 1, 19, 30, 00),
+        )
+        sv1.save()
+        vc1 = VideoChunk(
+            id=1,
+            stream_video_id=sv1,
+            file_name="1.flv",
+            full_path="/data/video/dummystreamername/1.flv",
+            fs_exist=True,
+            start_time=timezone.now() - timedelta(days=14),
+        )
+        vc1.save()
+        vc2 = VideoChunk(
+            id=2,
+            stream_video_id=sv1,
+            file_name="2.flv",
+            full_path="/data/video/dummystreamername/2.flv",
+            fs_exist=True,
+            start_time=timezone.now() - timedelta(days=6),
+        )
+        vc2.save()
+        vc3 = VideoChunk(
+            id=3,
+            stream_video_id=sv1,
+            file_name="3.flv",
+            full_path="/data/video/dummystreamername/3.flv",
+            fs_exist=True,
+            start_time=timezone.now() - timedelta(days=7),
+        )
+        vc3.save()
+
+        mock_os_path_exists.return_value = True
+
+        periodic_delete()
+
+        vc1 = VideoChunk.objects.all().filter(id=1).first()
+        vc2 = VideoChunk.objects.all().filter(id=2).first()
+        vc3 = VideoChunk.objects.all().filter(id=3).first()
+
+        self.assertEqual(vc1.fs_exist, False)
+        self.assertEqual(vc2.fs_exist, True)
+        self.assertEqual(vc3.fs_exist, False)
+        self.assertEqual(mock_os_path_exists.call_count, 2)
+        self.assertEqual(mock_os_remove.call_count, 2)

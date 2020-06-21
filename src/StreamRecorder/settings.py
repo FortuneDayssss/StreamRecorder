@@ -162,14 +162,20 @@ CELERY_BEAT_SCHEDULE = {
     'periodic_upload': {
         'task': 'StreamRecorder.tasks.periodic_upload',
         'schedule': 600.0
+    },
+    'periodic_delete': {
+        'task': 'StreamRecorder.tasks.periodic_delete',
+        'schedule': 3600.0
     }
 }
 
 # Bilibili
 if ENV_PROFILE == "dev" or ENV_PROFILE == "dev-docker":
-    import secret
-    BILIBILI_USERNAME = secret.BILIBILI_USERNAME
-    BILIBILI_PASSWORD = secret.BILIBILI_PASSWORD
+    import json
+    with open("secret.json", 'r') as f:
+        secret = json.loads(f.read())
+        BILIBILI_USERNAME = secret["bilibili_username"]
+        BILIBILI_PASSWORD = secret["bilibili_password"]
 else:
     BILIBILI_USERNAME = os.getenv("BILIBILI_USERNAME")
     BILIBILI_PASSWORD = os.getenv("BILIBILI_PASSWORD")
