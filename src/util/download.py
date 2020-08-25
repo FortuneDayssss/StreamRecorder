@@ -70,7 +70,6 @@ def download_requests_supervised(url, file_name, size_limit=None):
                         f.flush()
                         if i % 100 == 0:
                             logging.info("stream download: {}B".format(size_counter))
-                            print("stream download: {}B".format(size_counter))
                         if size_limit is not None and size_counter > size_limit:
                             logging.info("file size reached {} Byte, stop record".format(size_limit))
                             f.close()
@@ -92,7 +91,6 @@ def download_requests_supervised(url, file_name, size_limit=None):
 
     while not download_finished:
         current_stamp = datetime.now().timestamp()
-        print(current_stamp - last_chunk_timestamp)
         if current_stamp - last_chunk_timestamp > 60:
             logging.info("download is blocked, stop download...")
             response.close()
