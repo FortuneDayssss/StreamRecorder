@@ -81,4 +81,4 @@ class Douyu(RecorderBase):
 
     def download(self, room_id, file_name, size_limit=None):
         rtmp_url = self.get_rtmp(room_id)
-        util.download.download_requests(rtmp_url, file_name, size_limit)
+        util.download.download_requests_supervised(rtmp_url, file_name, size_limit)

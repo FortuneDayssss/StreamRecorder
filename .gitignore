@@ -6,3 +6,4 @@ venv
 src/StreamRecorder/migrations/*
 src/dashboard/migrations/*
 **/__pycache__
+src/dev_test/*
