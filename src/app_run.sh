@@ -6,11 +6,13 @@ if [ $ENV_PROFILE == "production" ] || [ $ENV_PROFILE == "dev-docker" ]; then
     mkdir -p "/src"
     mkdir -p "/db"
     mkdir -p "/video"
+    mkdir -p "/image"
 else
     echo "env: without docker"
     mkdir -p "../data/src"
     mkdir -p "../data/db"
     mkdir -p "../data/video"
+    mkdir -p "../image"
 fi
 
 # update models
