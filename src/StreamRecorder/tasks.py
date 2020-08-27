@@ -91,6 +91,7 @@ def upload_bilibili(sv_id):
         return "streamer task id {} not found".format(sv_id)
 
     try:
+        cover = st.upload_bilibili_cover_file_path
         vchunks = VideoChunk.objects.filter(stream_video_id=sv).order_by('start_time')
         parts = []
         part_counter = 0
@@ -115,7 +116,8 @@ def upload_bilibili(sv_id):
             source=binfo_json['source'],
             no_reprint=int(binfo_json['no_reprint']),
             open_elec=int(binfo_json['open_elec']),
-            copyright=2
+            copyright=2,
+            cover=cover
         )
     except:
         sv.bilibili_status = 'fail'

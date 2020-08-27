@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # init directories
-if [ $ENV_PROFILE = "production" or $ENV_PROFILE = "dev-docker"]; then
+if [ $ENV_PROFILE == "production" ] || [ $ENV_PROFILE == "dev-docker" ]; then
     echo "env: docker"
     mkdir -p "/src"
     mkdir -p "/db"

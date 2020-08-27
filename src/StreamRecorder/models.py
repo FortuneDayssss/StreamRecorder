@@ -14,6 +14,7 @@ class StreamerTask(models.Model):
     upload_bilibili_enabled = models.BooleanField(default=False, null=False)
     upload_bilibili_video_name = models.CharField(max_length=255, null=False)
     upload_bilibili_info = models.CharField(max_length=10240, null=False)
+    upload_bilibili_cover_file_path = models.CharField(max_length=255, default='', null=False)
     upload_onedrive_enabled = models.BooleanField(default=False)
 
 
