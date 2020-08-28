@@ -6,7 +6,7 @@ from datetime import timedelta
 import os.path
 from util.file import parse_file_size
 import upload.bilibili
-import bilibiliupload
+import bilibiliuploader
 import json
 import StreamRecorder.settings
 
@@ -91,13 +91,16 @@ def upload_bilibili(sv_id):
         return "streamer task id {} not found".format(sv_id)
 
     try:
+        cover = st.upload_bilibili_cover_file_path
         vchunks = VideoChunk.objects.filter(stream_video_id=sv).order_by('start_time')
         parts = []
-        for i, chunk in enumerate(vchunks):
+        part_counter = 0
+        for chunk in vchunks:
             if os.path.isfile(chunk.full_path):
-                part = bilibiliupload.VideoPart(
+                part_counter += 1
+                part = bilibiliuploader.VideoPart(
                     path=chunk.full_path,
-                    title="P{}".format(i + 1)
+                    title="P{}".format(part_counter)
                 )
                 parts.append(part)
 
@@ -113,7 +116,8 @@ def upload_bilibili(sv_id):
             source=binfo_json['source'],
             no_reprint=int(binfo_json['no_reprint']),
             open_elec=int(binfo_json['open_elec']),
-            copyright=2
+            copyright=2,
+            cover=cover
         )
     except:
         sv.bilibili_status = 'fail'
@@ -145,3 +149,15 @@ def periodic_upload():
             upload_bilibili.delay(sv.id)
             result += "id"
     return result
+
+
+@shared_task
+def periodic_delete():
+    result = ""
+    vcs = VideoChunk.objects.all().filter(start_time__lte=timezone.now()-timedelta(days=7), fs_exist=True)
+    for vc in vcs:
+        if os.path.exists(vc.full_path):
+            os.remove(vc.full_path)
+            result += vc.full_path
+        vc.fs_exist = False
+        vc.save()

@@ -1,8 +1,9 @@
 .idea/*
-src/secret.py
+src/secret.json
 src/celerybeat-schedule.db
 data/*
 venv
 src/StreamRecorder/migrations/*
 src/dashboard/migrations/*
 **/__pycache__
+src/dev_test/*

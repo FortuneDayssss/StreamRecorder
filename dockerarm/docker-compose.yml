@@ -14,7 +14,7 @@ services:
     build: .
     container_name: srs-app
     working_dir: '/src'
-    command: python3 manage.py runserver 0.0.0.0:5000
+    command: bash app_run.sh
     environment:
       - PYTHONUNBUFFERED=true
       - DATABASE_URL=/db/StreamRecorderDB.db
@@ -25,6 +25,7 @@ services:
       - '../src:/src'
       - '../data/db:/db'
       - '../data/video:/video'
+      - '../data/image:/image'
     links:
       - redis
     ports:
@@ -48,8 +49,9 @@ services:
       - BILIBILI_PASSWORD=PASSWORD
     volumes:
       - '../src:/src'
-      - '../data/video:/video'
       - '../data/db:/db'
+      - '../data/video:/video'
+      - '../data/image:/image'
     links:
       - redis
     depends_on:
@@ -70,8 +72,9 @@ services:
       - REDIS_PASSWORD=devpassword
     volumes:
       - '../src:/src'
-      - '../data/video:/video'
       - '../data/db:/db'
+      - '../data/video:/video'
+      - '../data/image:/image'
     ports:
       - '5555:5555'
     links:
