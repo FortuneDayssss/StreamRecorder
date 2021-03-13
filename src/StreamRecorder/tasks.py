@@ -68,9 +68,10 @@ def periodic_record():
 
     for st in sts:
         st.record_running = True
+        st.save()
         probe_and_download.delay(st.id)
         result += st.streamer_name + ","
-        st.save()
+        
     print(result)
     return result
 
