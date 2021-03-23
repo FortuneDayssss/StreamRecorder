@@ -3,6 +3,11 @@ import requests
 import json
 import logging
 import util.download
+import re
+import base64
+import urllib.parse
+import hashlib
+import time
 
 
 class Huya(RecorderBase):
@@ -24,13 +29,15 @@ class Huya(RecorderBase):
         print("hyPlayerConfig: " + str(data))
 
         ratio = 0
-        for ratio_info in data["stream"]["vMultiStreamInfo"]:
+        stream_data = json.loads(base64.b64decode(data['stream']).decode())
+
+        for ratio_info in stream_data["vMultiStreamInfo"]:
             if ratio_info["iBitRate"] > ratio:
                 ratio = ratio_info["iBitRate"]
 
         print(ratio)
 
-        data = data["stream"]["data"][0]["gameStreamInfoList"]
+        data = stream_data["data"][0]["gameStreamInfoList"]
         game_info_data = data[0]
         logging.debug("gameStreamInfo: " + str(game_info_data))
 
@@ -39,8 +46,6 @@ class Huya(RecorderBase):
               + ".flv" \
               + "?" + game_info_data["sFlvAntiCode"].replace("&amp;", "&") \
               + "&" + "ratio={}".format(ratio)
-
-        # TODO: parameter: u(dynamic?), sv(static?), t(static?)
 
         logging.debug("url: " + str(url))
         print(url)
@@ -60,13 +65,13 @@ class Huya(RecorderBase):
 
 
 if __name__ == '__main__':
-    room_id = "123123"
+    room_id = "508504"
 
     hy = Huya()
     is_streaming = hy.probe(room_id)
     if is_streaming:
         print("{} is streaming".format(room_id))
-        hy.download(room_id, "D:/stream.flv")
+        hy.download(room_id, "D:/huya.flv")
     else:
         print("{} is not streaming".format(room_id))
 

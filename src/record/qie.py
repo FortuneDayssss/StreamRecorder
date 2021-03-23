@@ -66,3 +66,8 @@ class QieEGame(RecorderBase):
 
 
         util.download.download_requests_supervised(real_url, file_name, size_limit)
+
+
+if __name__ == '__main__':
+    q = QieEGame()
+    print(q.probe("403580700"))
