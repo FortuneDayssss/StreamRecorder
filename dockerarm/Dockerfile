@@ -12,7 +12,7 @@ RUN apt-get install -y ca-certificates
 RUN update-ca-certificates
 
 RUN apt-get -y update
-RUN apt-get install -f -y python3-pip nodejs
+RUN apt-get install -f -y python3-pip nodejs  ffmpeg
 RUN apt-get install -f -y libffi-dev libssl-dev
 
 RUN mkdir -p /src /video /log

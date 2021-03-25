@@ -30,5 +30,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     url('api/', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls'))
+    url(r'^api-auth/', include('rest_framework.urls')),
+    url(r'^addtask/', views.add_task)
 ]

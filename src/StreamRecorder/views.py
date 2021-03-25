@@ -4,8 +4,13 @@ from django.contrib.auth.models import User
 from StreamRecorder.models import StreamerTask, StreamVideo, VideoChunk
 from StreamRecorder.serializers import UserSerializer, StreamerTaskSerializer, StreamVideoSerializer, VideoChunkSerializer
 
+
 def index(request):
     return HttpResponse("hello world")
+
+
+def add_task(request):
+    return HttpResponse("add_task function")
 
 
 class UserViewSet(viewsets.ModelViewSet):

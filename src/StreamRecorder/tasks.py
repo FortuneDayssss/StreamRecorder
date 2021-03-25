@@ -9,6 +9,7 @@ import upload.bilibili
 import bilibiliuploader
 import json
 import StreamRecorder.settings
+import subprocess
 
 
 @shared_task
@@ -51,6 +52,7 @@ def probe_and_download(streamer_task_id):
                 file_name=file_name,
                 full_path=full_path,
                 fs_exist=True,
+                discard=False,
                 start_time=record_time
             )
             new_chunk.save()
@@ -96,7 +98,7 @@ def upload_bilibili(sv_id):
         parts = []
         part_counter = 0
         for chunk in vchunks:
-            if os.path.isfile(chunk.full_path):
+            if not chunk.discard and os.path.isfile(chunk.full_path):
                 part_counter += 1
                 part = bilibiliuploader.VideoPart(
                     path=chunk.full_path,
@@ -126,6 +128,43 @@ def upload_bilibili(sv_id):
         if sv.bilibili_status != 'fail':
             sv.bilibili_status = "finished"
             sv.save()
+
+
+@shared_task
+def fix_track(video_chunk_id):
+    vchunk = VideoChunk.objects.filter(id=video_chunk_id).first()
+    if not vchunk:
+        return "cannot found chunk id"
+    else:
+        origin_file_path = vchunk.full_path
+        output_file_path = vchunk.full_path + "_fix_track.mp4"
+        if not os.path.isfile(origin_file_path):
+            return "cannot found chunk file"
+        else:
+            command = "ffmpeg -i {in_file} -vcodec copy -acodec copy -flvflags add_keyframe_index {out_file} -y".format(
+                in_file=origin_file_path,
+                out_file=output_file_path
+            )
+            try:
+                retcode = subprocess.call(command, shell=True)
+                if retcode == 0:
+                    new_chunk = VideoChunk(
+                        stream_video_id=vchunk.stream_video_id,
+                        file_name=vchunk.file_name + "_fix_track.mp4",
+                        full_path=output_file_path,
+                        fs_exist=True,
+                        discard=False,
+                        start_time=vchunk.start_time
+                    )
+                    new_chunk.save()
+                    vchunk.discard = True
+                    vchunk.save()
+                    return "{} fix success".format(video_chunk_id)
+                else:
+                    os.remove(output_file_path)
+                    return "fix track failed..."
+            except Exception as e:
+                return "Error:" + str(e)
 
 
 @shared_task

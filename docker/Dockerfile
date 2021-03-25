@@ -14,7 +14,7 @@ RUN update-ca-certificates
 COPY sources.list /etc/apt/
 
 RUN apt-get -y update
-RUN apt-get install -f -y python3-pip nodejs
+RUN apt-get install -f -y python3-pip nodejs ffmpeg
 
 RUN mkdir -p /src /video /log
 

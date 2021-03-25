@@ -39,4 +39,5 @@ class VideoChunk(models.Model):
     file_name = models.CharField(max_length=255)
     full_path = models.CharField(max_length=255)
     fs_exist = models.BooleanField(default=False, null=False)
+    discard = models.BooleanField(default=False, null=False)
     start_time = models.DateTimeField()
