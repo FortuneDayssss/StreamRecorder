@@ -52,5 +52,6 @@ class VideoChunkSerializer(serializers.ModelSerializer):
             'file_name',
             'full_path',
             'fs_exist',
+            'discard',
             'start_time'
         )
