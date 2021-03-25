@@ -2,7 +2,6 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from StreamRecorder.celery import app
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'StreamRecorder.settings')

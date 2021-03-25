@@ -5,7 +5,7 @@ from django.conf import settings
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'StreamRecorder.settings')
 
-app = Celery('StreamRecorder', broker=os.environ.get('CELERY_BROKER_URL'))
+app = Celery('StreamRecorder')
 
 
 app.config_from_object('django.conf:settings', namespace='CELERY')
