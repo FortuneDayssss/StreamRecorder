@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from rest_framework import viewsets
 from django.contrib.auth.models import User
 from StreamRecorder.models import StreamerTask, StreamVideo, VideoChunk
@@ -9,9 +9,8 @@ def index(request):
     return HttpResponse("hello world")
 
 
-def add_task(request):
-    return HttpResponse("add_task function")
-
+def add_task(request: HttpRequest):
+    return HttpResponse(str(request.content_params))
 
 
 class UserViewSet(viewsets.ModelViewSet):
