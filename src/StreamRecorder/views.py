@@ -13,6 +13,7 @@ def add_task(request):
     return HttpResponse("add_task function")
 
 
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
